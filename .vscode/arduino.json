@@ -1,7 +1,0 @@
-{
-  "configuration": "cpu=atmega2560",
-  "board": "arduino:avr:mega",
-  "sketch": "ix37.ino",
-  "port": "/dev/tty.usbserial-0001",
-  "output": "./build"
-}

@@ -1,0 +1,20 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "gdb",
+      "request": "attach",
+      "name": "Debug Microcontroller",
+      "target": ":3333",
+      "executable": "./build/debug/ix37.elf",
+      "debugger_args": ["-iex", "set target-async off"],
+      "gdbpath": "avr-gdb",
+      "remote": true,
+      "cwd": "${workspaceRoot}",
+      "autorun": [
+        //"load ./build/debug/ix37.elf",
+        "monitor reset init"
+      ]
+    }
+  ]
+}
