@@ -42,7 +42,16 @@ OBJCOPY = avr-objcopy
 all: $(BUILDDIR)/$(TARGET).hex
  
 flash: $(BUILDDIR)/$(TARGET).hex
-	@echo avrdude -c usbtiny -p $(MCU) -U flash:w:$(BUILDDIR)/$(TARGET).hex
+	@echo avrdude -c $(AVRDUDE_PROGRAMMER) -p $(MCU) -v -U flash:w:$(BUILDDIR)/$(TARGET).hex
+
+fuses: 
+	@echo avrdude -c $(AVRDUDE_PROGRAMMER) -p $(MCU) -v -U efuse:w:$(EFUSE):m -U hfuse:w:$(HFUSE):m -U lfuse:w:$(LFUSE):m
+
+enable_dw:
+	@echo avrdude -c $(AVRDUDE_PROGRAMMER) -p $(MCU) -v -U hfuse:w:$(HFUSE_DBG):m
+
+disable_dw:
+	@echo avrdude -c $(AVRDUDE_PROGRAMMER) -p $(MCU) -v -U hfuse:w:$(HFUSE):m
  
 $(BUILDDIR)/%.hex: $(BUILDDIR)/%.elf
 	$(OBJCOPY) -j .text -j .data -O ihex $< $@
@@ -58,3 +67,6 @@ $(BUILDDIR):
  
 clean: 
 	rm -fr $(BUILDDIR)
+
+.PHONY: fuses clean
+.PRECIOUS: $(BUILDDIR)/%.elf

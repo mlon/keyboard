@@ -14,7 +14,26 @@
       "autorun": [
         //"load ./build/debug/ix37.elf",
         "monitor reset init"
-      ]
+      ],
+      "preLaunchTask": "avarice",
+      "postDebugTask": "terminate avarice"
+    },
+    {
+      "type": "gdb",
+      "request": "attach",
+      "name": "Debug Simulator",
+      "target": ":1234",
+      "executable": "./build/debug/ix37.elf",
+      "debugger_args": ["-iex", "set target-async off"],
+      "gdbpath": "avr-gdb",
+      "remote": true,
+      "cwd": "${workspaceRoot}",
+      "autorun": [
+        //"load ./build/debug/ix37.elf",
+        //"monitor reset init"
+      ],
+      "preLaunchTask": "simavr",
+      "postDebugTask": "terminate simavr"
     }
   ]
 }

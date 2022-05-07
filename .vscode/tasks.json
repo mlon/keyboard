@@ -1,0 +1,118 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "make",
+      "type": "shell",
+      "command": "make",
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "clear": false
+      }
+    },
+    {
+      "label": "simavr",
+      "type": "shell",
+      "command": "simavr",
+      "args": [
+        "-m",
+        "atmega328p",
+        "-f",
+        "16000000",
+        "-g",
+        "build/debug/ix37.hex"
+      ],
+      "isBackground": true,
+      "group": "test",
+      "problemMatcher": [
+        {
+          "pattern": [
+            {
+              "regexp": ".",
+              "file": 1,
+              "location": 2,
+              "message": 3
+            }
+          ],
+          "background": {
+            "activeOnStart": true,
+            "beginsPattern": ".",
+            "endsPattern": "avr_gdb_init listening on port 1234"
+          }
+        }
+      ],
+      "presentation": {
+        "echo": true,
+        "reveal": "never",
+        "close": true,
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      }
+    },
+    {
+      "label": "terminate simavr",
+      "command": "echo ${input:terminate-simavr}",
+      "type": "shell",
+      "problemMatcher": []
+    },
+    {
+      "label": "avarice",
+      "type": "shell",
+      "command": "avarice",
+      "args": ["-4", "-w", "-d", "-P", "atmega328p", ":3333"],
+      "isBackground": true,
+      "group": "test",
+      "problemMatcher": [
+        {
+          "pattern": [
+            {
+              "regexp": ".",
+              "file": 1,
+              "location": 2,
+              "message": 3
+            }
+          ],
+          "background": {
+            "activeOnStart": true,
+            "beginsPattern": ".",
+            "endsPattern": "."
+          }
+        }
+      ],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      }
+    },
+    {
+      "label": "terminate simavr",
+      "command": "echo ${input:terminate-simavr}",
+      "type": "shell",
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "terminate-simavr",
+      "type": "command",
+      "command": "workbench.action.tasks.terminate",
+      "args": "simavr"
+    },
+    {
+      "id": "terminate-avarice",
+      "type": "command",
+      "command": "workbench.action.tasks.terminate",
+      "args": "avarice"
+    }
+  ]
+}

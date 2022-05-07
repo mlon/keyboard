@@ -7,7 +7,7 @@
 
 uint64_t counter = 0;
 
-int turn_on(uint64_t counter) { return counter % 2; }
+int turn_on(uint64_t counter) { return counter % 3; }
 
 int main(void) {
   DDRB |= _BV(DDB5);
