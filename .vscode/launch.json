@@ -14,9 +14,9 @@
       "autorun": [
         //"load ./build/debug/ix37.elf",
         "monitor reset init"
-      ],
-      "preLaunchTask": "avarice",
-      "postDebugTask": "terminate avarice"
+      ]
+      //"preLaunchTask": "avarice",
+      //"postDebugTask": "terminate avarice"
     },
     {
       "type": "gdb",

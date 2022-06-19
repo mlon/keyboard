@@ -4,7 +4,7 @@ TARGET = ix37
 AVRDUDE_PROGRAMMER = atmelice_isp
 
 MCU = atmega328p
-F_CPU = 16000000UL
+F_CPU = 20000000UL
 FORMAT = ihex
 
 BUILDDIR = build/${BUILD}
@@ -42,16 +42,19 @@ OBJCOPY = avr-objcopy
 all: $(BUILDDIR)/$(TARGET).hex
  
 flash: $(BUILDDIR)/$(TARGET).hex
-	@echo avrdude -c $(AVRDUDE_PROGRAMMER) -p $(MCU) -v -U flash:w:$(BUILDDIR)/$(TARGET).hex
+	avrdude -c $(AVRDUDE_PROGRAMMER) -p $(MCU) -v -U flash:w:$(BUILDDIR)/$(TARGET).hex
 
 fuses: 
-	@echo avrdude -c $(AVRDUDE_PROGRAMMER) -p $(MCU) -v -U efuse:w:$(EFUSE):m -U hfuse:w:$(HFUSE):m -U lfuse:w:$(LFUSE):m
+	avrdude -c $(AVRDUDE_PROGRAMMER) -p $(MCU) -v -U efuse:w:$(EFUSE):m -U hfuse:w:$(HFUSE):m -U lfuse:w:$(LFUSE):m
 
 enable_dw:
-	@echo avrdude -c $(AVRDUDE_PROGRAMMER) -p $(MCU) -v -U hfuse:w:$(HFUSE_DBG):m
+	avrdude -c $(AVRDUDE_PROGRAMMER) -p $(MCU) -v -U hfuse:w:$(HFUSE_DBG):m
 
 disable_dw:
-	@echo avrdude -c $(AVRDUDE_PROGRAMMER) -p $(MCU) -v -U hfuse:w:$(HFUSE):m
+	avrdude -c $(AVRDUDE_PROGRAMMER) -p $(MCU) -v -U hfuse:w:$(HFUSE):m
+
+erase: 
+	avrdude -c $(AVRDUDE_PROGRAMMER) -p $(MCU) -v -e
  
 $(BUILDDIR)/%.hex: $(BUILDDIR)/%.elf
 	$(OBJCOPY) -j .text -j .data -O ihex $< $@

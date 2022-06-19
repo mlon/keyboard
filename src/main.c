@@ -1,26 +1,32 @@
 #include <avr/io.h>
-#include <util/delay.h>
 
-#include "voices.h"
+#include "mcp23s18.h"
+#include "spi.h"
 
-#define BLINK_DELAY_MS 1000
-
-uint64_t counter = 0;
-
-int turn_on(uint64_t counter) { return counter % 3; }
+#define MOSI PINB3
+#define MISO PINB4
+#define SCK PINB5
+#define EXP_CS PINB1
 
 int main(void) {
-  DDRB |= _BV(DDB5);
+  // configure SPI
+
+  DDRB |= (1 << MOSI) | (1 << SCK) | (1 << EXP_CS) | (1 << PINB2);
+  SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR0);
+
+  PORTB |= (1 << EXP_CS);
+
+  // configure B ports of expander as input-pullup
+  // it's already set to read by default so we only need to enable the pull-ups
+  mcp23s18_write(EXP_CS, MCP23S18_GPPUB, 0xFF);
+
+  // configure A ports of expander as output
+  mcp23s18_write(EXP_CS, MCP23S18_IODIRA, 0xFF);
 
   while (1) {
-    counter++;
+    uint8_t input = mcp23s18_read(EXP_CS, MCP23S18_GPIOB);
+    uint8_t connected = !(input & (1 << 0));
 
-    if (turn_on(counter) && !turn_on(counter - 1)) {
-      PORTB |= _BV(PORTB5);
-    }
-
-    if (!turn_on(counter) && turn_on(counter - 1)) {
-      PORTB &= ~_BV(PORTB5);
-    }
+    mcp23s18_write(EXP_CS, MCP23S18_OLATA, connected << 7);
   }
 }

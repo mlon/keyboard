@@ -7,7 +7,7 @@
       "compilerArgs": [
         "-ggdb3",
         "-Og",
-        "-DF_CPU=16000000UL",
+        "-DF_CPU=20000000UL",
         "-mmcu=atmega328p",
         "-std=gnu11",
         "-funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -Wall -Wstrict-prototypes"
@@ -21,7 +21,14 @@
       ],
       "forcedInclude": [],
       "cStandard": "c11",
-      "defines": ["__AVR_ATmega328P__", "F_CPU=16000000UL"],
+      "defines": [
+        "__AVR_ATmega328P__",
+        "F_CPU=20000000UL",
+        "callt=",
+        "near_func=",
+        "far=",
+        "huge="
+      ],
       "browse": {
         "path": ["${workspaceFolder}"],
         "limitSymbolsToIncludedHeaders": true
