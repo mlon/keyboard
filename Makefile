@@ -4,7 +4,7 @@ TARGET = ix37
 AVRDUDE_PROGRAMMER = atmelice_isp
 
 MCU = atmega328p
-F_CPU = 20000000UL
+F_CPU = 16000000UL
 FORMAT = ihex
 
 BUILDDIR = build/${BUILD}

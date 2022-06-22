@@ -7,12 +7,17 @@
       "compilerArgs": [
         "-ggdb3",
         "-Og",
-        "-DF_CPU=20000000UL",
+        "-DF_CPU=16000000UL",
         "-mmcu=atmega328p",
-        "-std=gnu11",
-        "-funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -Wall -Wstrict-prototypes"
+        "-fshort-enums",
+        "-funsigned-bitfields",
+        "-fpack-struct",
+        "-fshort-enums",
+        "-Wall",
+        "-Wstrict-prototypes",
+        "-std=gnu17"
       ],
-      "intelliSenseMode": "macos-gcc-arm",
+      "intelliSenseMode": "gcc-x64",
       "includePath": [
         "${workspaceFolder}/src/",
         "/usr/local/Cellar/avr-gcc@9/9.3.0_3/lib/avr-gcc/9/gcc/avr/9.3.0/include",
@@ -20,15 +25,8 @@
         "/usr/local/Cellar/avr-gcc@9/9.3.0_3/avr/include"
       ],
       "forcedInclude": [],
-      "cStandard": "c11",
-      "defines": [
-        "__AVR_ATmega328P__",
-        "F_CPU=20000000UL",
-        "callt=",
-        "near_func=",
-        "far=",
-        "huge="
-      ],
+      "cStandard": "gnu17",
+      "defines": ["__AVR_ATmega328P__", "F_CPU=16000000UL"],
       "browse": {
         "path": ["${workspaceFolder}"],
         "limitSymbolsToIncludedHeaders": true

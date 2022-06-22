@@ -1,32 +1,115 @@
+#include <stdbool.h>
+#include <stdlib.h>
+
+#include <avr/interrupt.h>
 #include <avr/io.h>
+#include <util/atomic.h>
 
-#include "mcp23s18.h"
-#include "spi.h"
+#include "millis.h"
 
-#define MOSI PINB3
-#define MISO PINB4
-#define SCK PINB5
-#define EXP_CS PINB1
+// PortB 5
+// 0-4 Break Input
+
+// PortC
+// 0-4 Make Input
+#define AFTER_TOUCH 5
+
+// PortD  2, 3, 4
+#define RX 0
+#define TX 1
+#define CLOCK 5
+#define SHIFT 6
+#define CLEAR 7
+
+#define setBit(p, m) ((p) |= _BV((m)))
+#define clearBit(p, m) ((p) &= ~_BV((m)))
+#define getBit(p, m) ((p)&_BV(m))
+
+unsigned char mkStates[8] = {0};
+unsigned char brStates[8] = {0};
+unsigned int times[8][5] = {0};
+
+void sendByte(char data) {
+  while (!(UCSR0A & (1 << UDRE0))) {
+  };
+  UDR0 = data;
+}
+
+void sendChannelPressure(unsigned int channelPressure){};
+void sendKey(char row, char col, bool on, unsigned int delay){};
 
 int main(void) {
-  // configure SPI
+  init_millis();
 
-  DDRB |= (1 << MOSI) | (1 << SCK) | (1 << EXP_CS) | (1 << PINB2);
-  SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR0);
+  // set up IO
+  DDRD |= (1 << TX) | (1 << CLOCK) | (1 << CLEAR) | (1 << SHIFT);
+  DDRC |= (1 << AFTER_TOUCH);
 
-  PORTB |= (1 << EXP_CS);
+  // set up UART
+  UCSR0B |= (1 << TXEN0);
+  unsigned int ubrr = (F_CPU / (16 * 31250UL)) - 1;
+  UBRR0L = (unsigned char)(ubrr >> 8);
+  UBRR0H = (unsigned char)ubrr;
 
-  // configure B ports of expander as input-pullup
-  // it's already set to read by default so we only need to enable the pull-ups
-  mcp23s18_write(EXP_CS, MCP23S18_GPPUB, 0xFF);
+  // set up ADC, set prescalar to 128,11.0598MHz/128 = 85KHz
+  unsigned int afterTouch = 0;
+  ADMUX |= AFTER_TOUCH;
+  ADCSRA |= (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0) | (1 << ADEN);
 
-  // configure A ports of expander as output
-  mcp23s18_write(EXP_CS, MCP23S18_IODIRA, 0xFF);
+  // reset T shift register
+  PORTD &= ~(1 << CLEAR);
+  PORTD |= (1 << CLOCK);
+  PORTD &= ~(1 << CLOCK);
+  PORTD |= (1 << CLEAR);
 
-  while (1) {
-    uint8_t input = mcp23s18_read(EXP_CS, MCP23S18_GPIOB);
-    uint8_t connected = !(input & (1 << 0));
+  while (true) {
+    // queue up high into the shift register
+    PORTD |= (1 << SHIFT);
+    for (char i = 0; i < 8; i++) {
+      // pulse the clock to load the next queued up value into the shift
+      // register
+      PORTD |= (1 << CLOCK);
+      PORTD &= ~(1 << CLOCK);
 
-    mcp23s18_write(EXP_CS, MCP23S18_OLATA, connected << 7);
+      for (char j = 0; j < 5; j++) {
+        if (getBit(PINB, j)) {
+          // break
+
+          if (!getBit(brStates[i], j)) {
+            setBit(brStates[i], j);
+            times[i][j] = millis();
+          }
+
+          if (getBit(PINC, j)) {
+            // make
+            if (!getBit(mkStates[i], j)) {
+              sendKey(i, j, true, millis() - times[i][j]);
+              setBit(mkStates[i], j);
+            }
+          } else {
+            if (getBit(mkStates[i], j)) {
+              clearBit(mkStates[i], j);
+              times[i][j] = millis();
+            }
+          }
+        } else {
+          if (getBit(brStates[i], j)) {
+            sendKey(i, j, false, millis() - times[i][j]);
+            clearBit(brStates[i], j);
+          }
+        }
+      }
+
+      // queue up low into the shift register
+      PORTD &= ~(1 << SHIFT);
+    }
+
+    ADCSRA |= (1 << ADSC);
+    while (!(ADCSRA & (1 << ADSC))) {
+    };
+    if (afterTouch != ADC) {
+      afterTouch = ADC;
+      sendChannelPressure(afterTouch);
+    }
   }
 }

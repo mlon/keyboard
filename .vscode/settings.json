@@ -25,6 +25,13 @@
     "type_traits": "c",
     "vector": "c",
     "array": "c",
-    "utility": "c"
+    "utility": "c",
+    "millis.h": "c",
+    "__functional_base_03": "c",
+    "__hash_table": "c",
+    "__tuple": "c",
+    "compare": "c",
+    "cstdint": "c",
+    "stdint.h": "c"
   }
 }
