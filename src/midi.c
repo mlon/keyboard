@@ -3,16 +3,15 @@
 #include <stdlib.h>
 
 #include "midi.h"
+#include "wiring.h"
 
-#define TX 1
-
-void sendByte(char data) {
+void sendByte(unsigned char data) {
   while (!(UCSR0A & (1 << UDRE0))) {
   };
   UDR0 = data;
 }
 
-void sendChannelPressure(unsigned int channelPressure) {
+void sendChannelPressure(unsigned char channelPressure) {
   sendByte(0xD0);
   sendByte(channelPressure / 2);
 };
@@ -31,7 +30,9 @@ void initMidi(void) {
 
   // set up UART
   UCSR0B |= (1 << TXEN0);
-  unsigned int ubrr = (F_CPU / (16 * 31250UL)) - 1;
-  UBRR0L = (unsigned char)(ubrr >> 8);
-  UBRR0H = (unsigned char)ubrr;
+  UCSR0C = (1 << UCSZ01) | (1 << UCSZ00);
+
+  unsigned int ubrr = (F_CPU / (16UL * 31250UL)) - 1;
+  UBRR0H = (unsigned char)(ubrr >> 8);
+  UBRR0L = (unsigned char)ubrr;
 }

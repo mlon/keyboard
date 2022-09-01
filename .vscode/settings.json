@@ -33,6 +33,7 @@
     "compare": "c",
     "cstdint": "c",
     "stdint.h": "c",
-    "midi.h": "c"
+    "midi.h": "c",
+    "after_touch.h": "c"
   }
 }

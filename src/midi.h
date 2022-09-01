@@ -7,5 +7,5 @@ static const unsigned int DELAY_FASTEST = 5;
 
 void initMidi(void);
 
-void sendChannelPressure(unsigned int channelPressure);
+void sendChannelPressure(unsigned char channelPressure);
 void sendKey(unsigned char row, unsigned char col, bool on, unsigned int delay);

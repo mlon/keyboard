@@ -7,7 +7,7 @@
 static volatile unsigned int milliseconds;
 ISR(TIMER2_COMPA_vect) { ++milliseconds; }
 
-void init_millis(void) {
+void initMillis(void) {
   TCCR2A = (1 << WGM21);
   TCCR2B = (1 << CS22);
   TIMSK2 = (1 << OCIE2A);
