@@ -5,6 +5,8 @@
 #include "midi.h"
 #include "wiring.h"
 
+static const unsigned int DELAY_FASTEST = 5;
+
 void sendByte(unsigned char data) {
   while (!(UCSR0A & (1 << UDRE0))) {
   };

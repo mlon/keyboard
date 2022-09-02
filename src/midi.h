@@ -3,8 +3,6 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-static const unsigned int DELAY_FASTEST = 5;
-
 void initMidi(void);
 
 void sendChannelPressure(unsigned char channelPressure);

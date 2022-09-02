@@ -3,7 +3,6 @@
 #include <util/delay.h>
 
 #include "matrix.h"
-
 #include "midi.h"
 #include "millis.h"
 #include "wiring.h"
@@ -12,93 +11,76 @@
 #define clearBit(p, m) ((p) &= ~_BV((m)))
 #define getBit(p, m) ((p)&_BV(m))
 
-unsigned char mkStates[8] = {0};
-unsigned char brStates[8] = {0};
-unsigned int times[8][5] = {0};
+static unsigned char mkStates[8] = {0};
+static unsigned char brStates[8] = {0};
+static unsigned int times[8][5] = {0};
 
-void pulseClock(unsigned char clockPin) {
-  PORTD |= (1 << clockPin);
-  _delay_ms(5);
-  PORTD &= ~(1 << clockPin);
-};
+unsigned char spiReadWrite(unsigned char data) {
+  SPDR = data;
+  asm volatile("nop");
+  while (!(SPSR & (1 << SPIF)))
+    ;
 
-void readInput(unsigned char *mkInput, unsigned char *brInput) {
-  unsigned int matrixInput = 0;
-  // lower Latch pin to load data in
-  PORTB |= (1 << CLK_INH);
-  PORTD &= ~(1 << LAT_IN);
-  _delay_ms(5);
-  PORTD |= (1 << LAT_IN);
-  PORTB &= ~(1 << CLK_INH);
+  return SPDR;
+}
 
-  // shift data in
-  for (unsigned char j = 0; j < 10; j++) {
-    unsigned char val = 1 & (PIND >> SFT_IN);
-    unsigned int bit = val << j;
-    matrixInput |= bit;
-    pulseClock(CLK_IN);
-  }
-  *brInput = matrixInput & 0b11111;
-  *mkInput = (matrixInput >> 5) & 0b11111;
+unsigned int readRowInput(unsigned char t) {
+  // latch inputs into shift register
+  PORTB |= (1 << LATCH);
+
+  // read first input shift register
+  unsigned char inputLow = spiReadWrite(0);
+
+  // read second shift register and write next output shift register
+  unsigned char inputHi = spiReadWrite(1 << ((t + 1) % 8));
+
+  // start loading inputs into registers again
+  PORTB &= ~(1 << LATCH);
+
+  return (inputHi << 8) | inputLow;
 }
 
 void initMatrix(void) {
-  DDRD |= (1 << CLK_OUT) | (1 << CLR_OUT) | (1 << SFT_OUT) | (1 << CLK_IN) |
-          (1 << LAT_IN);
-  DDRB |= (1 << CLK_INH);
+  DDRB |= (1 << MOSI) | (1 << SCK) | (1 << LATCH);
+  SPCR = (1 << SPE) | (1 << MSTR);
+  SPSR = (1 << SPI2X);
 
-  // clear input shift register
-  PORTD &= ~(1 << CLR_OUT);
-  pulseClock(CLK_OUT);
-  PORTD |= (1 << CLR_OUT);
+  spiReadWrite(0b00000001);
 }
 
-void scanRow(unsigned char t, unsigned char mk, unsigned char br) {
-  for (unsigned char j = 0; j < 5; j++) {
-    if (getBit(br, j)) {
-      // break
+void scanMatrix(void) {
+  for (int t = 0; t < 8; t++) {
+    unsigned int input = readRowInput(t);
+    unsigned char mk = (input >> 5) & 0b11111;
+    unsigned char br = input & 0b11111;
 
-      if (!getBit(brStates[t], j)) {
-        setBit(brStates[t], j);
-        times[t][j] = millis();
-      }
+    for (unsigned char j = 0; j < 5; j++) {
+      if (getBit(br, j)) {
+        // break
 
-      if (getBit(mk, j)) {
-        // make
-        if (!getBit(mkStates[t], j)) {
-          sendKey(t, j, true, millis() - times[t][j]);
-          setBit(mkStates[t], j);
-        }
-      } else {
-        if (getBit(mkStates[t], j)) {
-          clearBit(mkStates[t], j);
+        if (!getBit(brStates[t], j)) {
+          setBit(brStates[t], j);
           times[t][j] = millis();
         }
-      }
-    } else {
-      if (getBit(brStates[t], j)) {
-        sendKey(t, j, false, millis() - times[t][j]);
-        clearBit(brStates[t], j);
+
+        if (getBit(mk, j)) {
+          // make
+          if (!getBit(mkStates[t], j)) {
+            sendKey(t, j, true, millis() - times[t][j]);
+            setBit(mkStates[t], j);
+          }
+        } else {
+          if (getBit(mkStates[t], j)) {
+            clearBit(mkStates[t], j);
+            times[t][j] = millis();
+          }
+        }
+      } else {
+        if (getBit(brStates[t], j)) {
+          sendKey(t, j, false, millis() - times[t][j]);
+          clearBit(brStates[t], j);
+        }
       }
     }
-  }
-};
-
-void scanMatrix(void) {
-  // queue up high into the shift register
-  PORTD |= (1 << SFT_OUT);
-
-  for (int t = 0; t < 8; t++) {
-    // pulse the clock to load the next queued up value into the shift
-    // register
-    pulseClock(CLK_OUT);
-
-    unsigned char mkInput = 0;
-    unsigned char brInput = 0;
-    readInput(&mkInput, &brInput);
-    scanRow(t, mkInput, brInput);
-
-    // queue up high into the shift register
-    PORTD &= ~(1 << SFT_OUT);
   }
 };
