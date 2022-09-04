@@ -1,1 +1,1 @@
-A custom 37 keys CV/Gate/Trigger master keyboard
+A custom 37 keys MIDI keyboard

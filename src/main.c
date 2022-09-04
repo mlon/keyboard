@@ -20,6 +20,6 @@ int main(void) {
 
   while (true) {
     scanMatrix();
-    // processAfterTouch();
+    processAfterTouch();
   }
 }

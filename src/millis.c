@@ -12,6 +12,7 @@ void initMillis(void) {
   TCCR2B = (1 << CS22);
   TIMSK2 = (1 << OCIE2A);
   OCR2A = ((F_CPU / 64) / 1000);
+  sei();
 }
 
 unsigned int millis(void) {

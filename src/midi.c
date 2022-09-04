@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include "midi.h"
+#include "millis.h"
 #include "wiring.h"
 
 static const unsigned int DELAY_FASTEST = 5;
@@ -22,7 +23,7 @@ void sendKey(unsigned char row, unsigned char col, bool on,
              unsigned int delay) {
 
   sendByte(on ? 0x90 : 0x80);
-  sendByte(col * 5 + row);
+  sendByte(48 + col * 8 + row);
   unsigned char velocity = 127 * DELAY_FASTEST / delay;
   sendByte(velocity < 127 ? velocity : 127);
 };

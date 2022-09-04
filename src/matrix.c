@@ -24,20 +24,18 @@ unsigned char spiReadWrite(unsigned char data) {
   return SPDR;
 }
 
-unsigned int readRowInput(unsigned char t) {
+void readRowInput(unsigned char t, unsigned char *br, unsigned char *mk) {
   // latch inputs into shift register
   PORTB |= (1 << LATCH);
 
   // read first input shift register
-  unsigned char inputLow = spiReadWrite(0);
+  *br = spiReadWrite(0);
 
   // read second shift register and write next output shift register
-  unsigned char inputHi = spiReadWrite(1 << ((t + 1) % 8));
+  *mk = spiReadWrite(1 << ((t + 1) % 8));
 
   // start loading inputs into registers again
   PORTB &= ~(1 << LATCH);
-
-  return (inputHi << 8) | inputLow;
 }
 
 void initMatrix(void) {
@@ -49,15 +47,15 @@ void initMatrix(void) {
 }
 
 void scanMatrix(void) {
-  for (int t = 0; t < 8; t++) {
-    unsigned int input = readRowInput(t);
-    unsigned char mk = (input >> 5) & 0b11111;
-    unsigned char br = input & 0b11111;
+  unsigned char mk = 0;
+  unsigned char br = 0;
+  for (unsigned char t = 0; t < 8; t++) {
+
+    readRowInput(t, &br, &mk);
 
     for (unsigned char j = 0; j < 5; j++) {
       if (getBit(br, j)) {
         // break
-
         if (!getBit(brStates[t], j)) {
           setBit(brStates[t], j);
           times[t][j] = millis();
