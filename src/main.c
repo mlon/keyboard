@@ -18,6 +18,8 @@ int main(void) {
   initMatrix();
   initAfterTouch();
 
+  sei();
+
   while (true) {
     scanMatrix();
     processAfterTouch();

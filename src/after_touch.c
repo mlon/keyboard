@@ -9,18 +9,20 @@ unsigned int previousAfterTouch = 0;
 
 void initAfterTouch(void) {
   DDRC |= (1 << AFTER_TOUCH);
+  DIDR0 |= (1 << AFTER_TOUCH);
 
   // set up ADC, set prescalar to 128,11.0598MHz/128 = 85KHz
   ADCSRA |= (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0) | (1 << ADEN);
 };
 
 void processAfterTouch(void) {
-  ADMUX |= AFTER_TOUCH;
+  ADMUX |= (1 << REFS0) | AFTER_TOUCH;
   ADCSRA |= (1 << ADSC);
   while (!(ADCSRA & (1 << ADSC))) {
   };
 
   unsigned int afterTouch = ADC;
+  // TODO process afterTouch
 
   if (afterTouch != previousAfterTouch) {
     previousAfterTouch = afterTouch;
