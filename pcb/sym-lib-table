@@ -1,0 +1,5 @@
+(sym_lib_table
+  (lib (name "9-215079-0")(type "KiCad")(uri "${KIPRJMOD}/library/9-215079-0/9-215079-0.kicad_sym")(options "")(descr ""))
+  (lib (name "SJ1-3543")(type "KiCad")(uri "${KIPRJMOD}/library/SJ1-3543/SJ1-3543.kicad_sym")(options "")(descr ""))
+  (lib (name "L712RA")(type "KiCad")(uri "${KIPRJMOD}/library/L712RA/L712RA.kicad_sym")(options "")(descr ""))
+)

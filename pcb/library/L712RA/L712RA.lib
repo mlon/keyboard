@@ -1,0 +1,31 @@
+EESchema-LIBRARY Version 2.3
+#encoding utf-8
+#(c) SnapEDA 2016 (snapeda.com)
+#This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA) with Design Exception 1.0
+#
+# L712RA
+#
+DEF L712RA J 0 40 Y N 1 L N
+F0 "J" -200 200 50 H V L BNN
+F1 "L712RA" -200 -200 50 H V L BNN
+F2 "SWITCHCRAFT_L712RA" 0 0 50 H I L BNN
+F3 "" 0 0 50 H I L BNN
+F4 "Manufacturer Recommendations" 0 0 50 H I L BNN "STANDARD"
+F5 "Switchcraft" 0 0 50 H I L BNN "MANUFACTURER"
+F6 "13.9mm" 0 0 50 H I L BNN "MAXIMUM_PACKAGE_HEIGHT"
+F7 "D" 0 0 50 H I L BNN "PARTREV"
+DRAW
+P 2 0 0 10 0 0 100 0 N
+P 2 0 0 10 0 0 0 -70 N
+P 4 0 0 10 0 -70 -10 -40 10 -40 0 -70 f
+P 2 0 0 10 -200 100 100 100 N
+P 2 0 0 10 -100 -100 100 -100 N
+A -250 95 50 -60 1860 0 0 10 N -200 100 -300 100
+A -150 -95 50 1740 3660 0 0 10 N -200 -100 -100 -100
+X ~ SS 300 0 200 L 40 40 0 0 P 
+X ~ S 300 -100 200 L 40 40 0 0 P 
+X ~ C 300 100 200 L 40 40 0 0 P 
+ENDDRAW
+ENDDEF
+#
+# End Library

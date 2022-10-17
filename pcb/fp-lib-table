@@ -1,0 +1,7 @@
+(fp_lib_table
+  (lib (name "9-215079-0")(type "KiCad")(uri "${KIPRJMOD}/library/9-215079-0")(options "")(descr ""))
+  (lib (name "3386F-1-252LF")(type "KiCad")(uri "${KIPRJMOD}/library/3386F-1-252LF.pretty")(options "")(descr ""))
+  (lib (name "L712RA")(type "KiCad")(uri "${KIPRJMOD}/library/L712RA")(options "")(descr ""))
+  (lib (name "SJ1-3543")(type "KiCad")(uri "${KIPRJMOD}/library/SJ1-3543")(options "")(descr ""))
+  (lib (name "ul_22R103C")(type "KiCad")(uri "${KIPRJMOD}/library/ul_22R103C")(options "")(descr ""))
+)
