@@ -4,6 +4,10 @@
 
   (paper "A4")
 
+  (title_block
+    (title "Matrix Scanner")
+  )
+
   (lib_symbols
     (symbol "4ms_Power-symbol:GND" (power) (pin_names (offset 0)) (in_bom yes) (on_board yes)
       (property "Reference" "#PWR" (id 0) (at 0 -6.35 0)
