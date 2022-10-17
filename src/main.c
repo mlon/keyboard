@@ -11,17 +11,20 @@
 #include "matrix.h"
 #include "midi.h"
 #include "millis.h"
+#include "transpose.h"
 
 int main(void) {
   initMillis();
   initMidi();
   initMatrix();
+  initTranspose();
   initAfterTouch();
 
   sei();
 
   while (true) {
     scanMatrix();
+    processTranspose();
     processAfterTouch();
   }
 }

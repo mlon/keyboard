@@ -34,6 +34,7 @@
     "cstdint": "c",
     "stdint.h": "c",
     "midi.h": "c",
-    "after_touch.h": "c"
+    "after_touch.h": "c",
+    "transpose.h": "c"
   }
 }

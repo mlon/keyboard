@@ -13,10 +13,11 @@ void initAfterTouch(void) {
 
   // set up ADC, set prescalar to 128,11.0598MHz/128 = 85KHz
   ADCSRA |= (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0) | (1 << ADEN);
+  ADMUX |= (1 << REFS0);
 };
 
 void processAfterTouch(void) {
-  ADMUX |= (1 << REFS0) | AFTER_TOUCH;
+  ADMUX |= AFTER_TOUCH;
   ADCSRA |= (1 << ADSC);
   while (!(ADCSRA & (1 << ADSC))) {
   };

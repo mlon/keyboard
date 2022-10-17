@@ -4,9 +4,11 @@
 
 #include "midi.h"
 #include "millis.h"
+#include "transpose.h"
 #include "wiring.h"
 
 static const unsigned int DELAY_FASTEST = 5;
+static unsigned char offset[37] = {0};
 
 void sendByte(unsigned char data) {
   while (!(UCSR0A & (1 << UDRE0))) {
@@ -22,8 +24,18 @@ void sendChannelPressure(unsigned char channelPressure) {
 void sendKey(unsigned char row, unsigned char col, bool on,
              unsigned int delay) {
 
+  /*
+    sendByte(0xF0);
+    sendByte(0x42);
+    sendByte(row);
+    sendByte(col);
+    sendByte(0xF7);
+  */
+  unsigned char key = col * 8 + row;
+  offset[key] = on ? getTransposeOffset() : offset[key];
+
   sendByte(on ? 0x90 : 0x80);
-  sendByte(48 + col * 8 + row);
+  sendByte(offset[key] + key);
   unsigned char velocity = 127 * DELAY_FASTEST / delay;
   sendByte(velocity < 127 ? velocity : 127);
 };

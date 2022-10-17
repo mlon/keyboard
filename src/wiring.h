@@ -1,6 +1,8 @@
 #pragma once
 
 // PortB
+#define BUTTON_A 0
+#define BUTTON_B 1
 #define LATCH 2
 #define MOSI 3
 #define MISO 4
